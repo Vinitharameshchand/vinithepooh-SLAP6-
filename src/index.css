@@ -1,103 +1,113 @@
 * {
-    margin: 0;
-    padding: 0;
-    box-sizing: border-box;
-  }
-  
-  html, body {
-    width: 100%;
-    height: 100%;
-  }
-  
-  body {
-    font-family: 'BlackChancery', cursive; /* Note: BlackChancery might not be available unless imported?Original used it, maybe it was a system font or missing import */
-    /* The link imported Playfair Display and Inter. The body used BlackChancery? */
-    /* Looking at backup/index.html, it imported Playfair+Display and Inter. */
-    /* But backup/index.css line 13: font-family: 'BlackChancery', cursive; */
-    /* Maybe the user has it installed locally or it's a mistake and they meant Playfair. */
-    /* I'll stick to 'Playfair Display' or 'Inter' based on the HTML imports, or keep BlackChancery if they insist, but I'll add Playfair as fallback */
-    font-family: 'Playfair Display', serif; /* Changed to use the imported font */
-    color: #02073b;
-    line-height: 1.8;
-    overflow-x: hidden;
-  }
-  
-  .background {
-    position: fixed;
-    inset: 0;
-    background-image: url('/image1.jpg');
-    background-size: cover;
-    background-position: center center;
-    background-repeat: no-repeat;
-    z-index: -2;
-  }
-  
-  .background::after {
-    content: "";
-    position: absolute;
-    inset: 0;
-    background: rgba(222, 244, 218, 0.85);
-  }
-  
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+html,
+body {
+  width: 100%;
+  height: 100%;
+}
+
+body {
+  font-family: 'BlackChancery', cursive;
+  /* Note: BlackChancery might not be available unless imported?Original used it, maybe it was a system font or missing import */
+  /* The link imported Playfair Display and Inter. The body used BlackChancery? */
+  /* Looking at backup/index.html, it imported Playfair+Display and Inter. */
+  /* But backup/index.css line 13: font-family: 'BlackChancery', cursive; */
+  /* Maybe the user has it installed locally or it's a mistake and they meant Playfair. */
+  /* I'll stick to 'Playfair Display' or 'Inter' based on the HTML imports, or keep BlackChancery if they insist, but I'll add Playfair as fallback */
+  font-family: 'Playfair Display', serif;
+  /* Changed to use the imported font */
+  color: #02073b;
+  line-height: 1.8;
+  overflow-x: hidden;
+}
+
+.background {
+  position: fixed;
+  inset: 0;
+  background-image: url('/image1.jpg');
+  background-size: cover;
+  background-position: center center;
+  background-repeat: no-repeat;
+  z-index: -2;
+}
+
+.background::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: rgba(222, 244, 218, 0.85);
+}
+
+.container {
+  max-width: 100%;
+  margin: 0;
+  padding: 90px 8%;
+  position: relative;
+  z-index: 10;
+  /* Ensure content is above background and canvas */
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+}
+
+.hero {
+  margin-bottom: 60px;
+  max-width: 600px;
+}
+
+.hero h1 {
+  font-family: 'Playfair Display', serif;
+  font-size: clamp(2.2rem, 5vw, 3rem);
+  font-weight: 600;
+  margin-bottom: 12px;
+}
+
+.subtitle {
+  font-size: 0.95rem;
+  color: #6f6f6f;
+  letter-spacing: 0.05em;
+}
+
+.story p {
+  font-size: 1.05rem;
+  margin-bottom: 28px;
+  max-width: 550px;
+  /* Restrict text width to left side */
+  line-height: 1.9;
+}
+
+footer {
+  margin-top: 80px;
+  font-size: 0.85rem;
+  color: #8a8a8a;
+}
+
+@media (max-width: 768px) {
   .container {
-    max-width: 900px;
-    margin: 0 auto;
-    padding: 90px 24px;
-    position: relative;
-    z-index: 1; /* Ensure content is above background */
+    padding: 60px 24px;
   }
-  
-  .hero {
-    margin-bottom: 60px;
-  }
-  
-  .hero h1 {
-    font-family: 'Playfair Display', serif;
-    font-size: clamp(2.2rem, 5vw, 3rem);
-    font-weight: 600;
-    margin-bottom: 12px;
-  }
-  
-  .subtitle {
-    font-size: 0.95rem;
-    color: #6f6f6f;
-    letter-spacing: 0.05em;
-  }
-  
+
   .story p {
-    font-size: 1.05rem;
-    margin-bottom: 28px;
-    max-width: 720px;
+    max-width: 100%;
   }
-  
-  footer {
-    margin-top: 80px;
-    font-size: 0.85rem;
-    color: #8a8a8a;
-  }
-  
-  @media (max-width: 768px) {
-    .container {
-      padding: 60px 18px;
-    }
-  }
-  
-  #container3D {
-    position: fixed;
-    inset: 0;
-    z-index: 0; /* Behind text (1), but maybe in front of background? */
-    /* Original had z-index: 100 and pointer-events: none. */
-    /* If z-index is 100 it covers text. Pointer events none helps. */
-    /* I'll use a Canvas component in App.jsx which will render into a div. */
-    pointer-events: none;
-  }
-  
-  /* Canvas specific style if needed, but R3F uses its own div usually. */
-  .canvas-container {
-    position: fixed;
-    inset: 0;
-    z-index: 50; /* Above background, below text usually? */
-    /* If user wants the model to be overlaying or interactive? */
-    /* Original had z-index: 100. */
-    pointer-events: none;
-  }
+}
+
+#container3D {
+  position: fixed;
+  inset: 0;
+  z-index: 0;
+  pointer-events: none;
+}
+
+/* Canvas specific style if needed, but R3F uses its own div usually. */
+.canvas-container {
+  position: fixed;
+  inset: 0;
+  z-index: 0;
+  /* Behind text (10), above background (-2) */
+  /* pointer-events: none; removed to allow mouse interaction */
+}

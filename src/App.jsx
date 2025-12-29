@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, Suspense } from 'react';
+import React, { useEffect, useRef, Suspense, useLayoutEffect } from 'react';
 import { Canvas } from '@react-three/fiber';
 import { OrbitControls, Environment } from '@react-three/drei';
 import gsap from 'gsap';
@@ -11,6 +11,7 @@ gsap.registerPlugin(ScrollTrigger);
 
 function App() {
   const containerRef = useRef(null);
+  const modelWrapperRef = useRef(null);
 
   useEffect(() => {
     // Reveal animation for Hero text
@@ -45,12 +46,71 @@ function App() {
     });
   }, []);
 
+  const [windowWidth, setWindowWidth] = React.useState(window.innerWidth);
+
+  useEffect(() => {
+    const handleResize = () => setWindowWidth(window.innerWidth);
+    window.addEventListener('resize', handleResize);
+    return () => window.removeEventListener('resize', handleResize);
+  }, []);
+
+  const getModelProps = () => {
+    if (windowWidth < 768) {
+      // Mobile: Smaller, centered or slightly offset
+      return {
+        position: [0, -1.5, 0],
+        scale: [0.008, 0.008, 0.008]
+      };
+    } else if (windowWidth < 1200) {
+      // Tablet/Small Laptop: Slightly closer
+      return {
+        position: [3, -1, 0],
+        scale: [0.01, 0.01, 0.01]
+      };
+    } else {
+      // Desktop: Original
+      return {
+        position: [5, -1, 0],
+        scale: [0.012, 0.012, 0.012]
+      };
+    }
+  };
+
+  const modelProps = getModelProps();
+
+  useLayoutEffect(() => {
+    if (!modelWrapperRef.current) return;
+
+    let ctx = gsap.context(() => {
+      // Continuous "Running"/Flying Animation across the screen
+      // The bird flies from Left (-15) to Right (+15) repeatedly
+
+      const tl = gsap.timeline({ repeat: -1 });
+
+      // Ensure bird faces right (PI/2)
+      gsap.set(modelWrapperRef.current.rotation, { y: Math.PI / 2, x: 0, z: 0 });
+
+      tl.fromTo(modelWrapperRef.current.position,
+        { x: -15, y: -1, z: 0 },
+        {
+          x: 15,
+          y: 1, // Slight drift up
+          z: 0,
+          duration: 5,
+          ease: "none"
+        }
+      );
+    }, modelWrapperRef); // Scope to ref
+
+    return () => ctx.revert(); // Cleanup
+  }, []); // Run once on mount
+
   return (
     <>
       <div className="background"></div>
 
       {/* 3D Scene Container */}
-      <div className="canvas-container" style={{ position: 'fixed', inset: 0, zIndex: 0, pointerEvents: 'none' }}>
+      <div className="canvas-container" style={{ position: 'fixed', inset: 0, zIndex: 0 }}>
         <ErrorBoundary>
           <Canvas camera={{ position: [0, 0, 13], fov: 75 }}>
             <ambientLight intensity={1.5} />
@@ -58,7 +118,12 @@ function App() {
             {/* Original lighting was strong directional. Adjusting for standard scene. */}
 
             <Suspense fallback={null}>
-              <Model position={[0, -2, 0]} />
+              <group
+                ref={modelWrapperRef}
+                scale={modelProps.scale}
+              >
+                <Model />
+              </group>
 
               {/* Optional: Add environment for better reflections on the model */}
               <Environment preset="city" />
